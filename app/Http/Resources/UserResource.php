@@ -39,12 +39,7 @@ class UserResource extends JsonResource
 
         if ($currentUser && $currentUser->type === 'admin') {
             $links[] = [
-                'rel'    => 'index',
-                'method' => 'GET',
-                'href'   => route('users.index')
-            ];
-            $links[] = [
-                'rel'    => 'show',
+                'rel'    => 'self',
                 'method' => 'GET',
                 'href'   => route('users.show', ['user' => $this->id])
             ];

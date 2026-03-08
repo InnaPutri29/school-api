@@ -19,11 +19,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::apiResource('users', UserController::class);
+        Route::apiResource('/kelas', KelasController::class);
     });
 });
 
 Route::apiResource('/guru', GuruController::class);
 Route::apiResource('/mapel', MapelController::class);
-Route::apiResource('/kelas', KelasController::class);
 Route::apiResource('/siswa', SiswaController::class);
 Route::apiResource('/jadwal', JadwalController::class);

@@ -3,81 +3,44 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Model\Kelas;
-use Illuminate\Http\Request;
+use App\Http\Requests\Kelas\KelasStoreRequest;
+use App\Http\Requests\Kelas\KelasUpdateRequest;
+use App\Http\Resources\KelasResource;
+use App\Models\Kelas;
 
 class KelasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $kelas = Kelas::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $kelas,
-            'status_code' => 200
-        ], 200);
+        $kelas = Kelas::paginate(10);
+        return KelasResource::collection($kelas);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(KelasStoreRequest $request)
     {
-        $kelas = Kelas::create($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $kelas,
-            'status_code' => 201
-        ], 201);
+        $kelas = Kelas::create($request->validated());
+        return (new KelasResource($kelas))->response()->setStatusCode(201); // Status 201 Created
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Kelas $kelas)
+    public function show(Kelas $kela)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $kelas,
-            'status_code' => 200
-        ], 200);
+        return new KelasResource($kela);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Kelas $kelas)
+    public function update(KelasUpdateRequest $request, Kelas $kela)
     {
-        $kelas->update($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $kelas,
-            'status_code' => 200
-        ], 200);
+        $kela->update($request->validated());
+        return (new KelasResource($kela))->additional([
+            'meta' => [
+                'message' => 'Kelas berhasil diperbarui!',
+                'status' => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Kelas $kelas)
+    public function destroy(Kelas $kela)
     {
-        $kelas->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => null,
-            'status_code' => 200
-        ], 200);
+        $kela->delete();
+        return response()->json(['message' => 'Kelas berhasil dihapus'], 200);
     }
 }
