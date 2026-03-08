@@ -14,22 +14,57 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $currentUser = $request->user();
+        $isMe = $currentUser && $currentUser->id === $this->id;
+
+        $links = [];
+
+        if ($isMe) {
+            $links[] = [
+                'rel'    => 'profile',
+                'method' => 'GET',
+                'href'   => route('profile.show')
+            ];
+            $links[] = [
+                'rel'    => 'update-profile',
+                'method' => 'PUT',
+                'href'   => route('profile.update')
+            ];
+            $links[] = [
+                'rel'    => 'logout',
+                'method' => 'POST',
+                'href'   => route('logout')
+            ];
+        }
+
+        if ($currentUser && $currentUser->type === 'admin') {
+            $links[] = [
+                'rel'    => 'index',
+                'method' => 'GET',
+                'href'   => route('users.index')
+            ];
+            $links[] = [
+                'rel'    => 'show',
+                'method' => 'GET',
+                'href'   => route('users.show', ['user' => $this->id])
+            ];
+            $links[] = [
+                'rel'    => 'update',
+                'method' => 'PUT',
+                'href'   => route('users.update', ['user' => $this->id])
+            ];
+            $links[] = [
+                'rel'    => 'delete',
+                'method' => 'DELETE',
+                'href'   => route('users.destroy', ['user' => $this->id])
+            ];
+        }
+
         return [
-            'id' => $this->id,
+            'id'       => $this->id,
             'username' => $this->username,
-            'role' => $this->type,
-            '_links' => [
-                [
-                    'rel' => 'self',
-                    'method' => 'GET',
-                    'href' => route('profile.show')
-                ],
-                [
-                    'rel' => 'logout',
-                    'method' => 'POST',
-                    'href' => route('logout')
-                ],
-            ]
+            'role'     => $this->type,
+            '_links'   => $links
         ];
     }
 }

@@ -14,12 +14,14 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/me', function () {
-        return new UserResource(auth()->user());
-    })->name('profile.show');
+    Route::get('/profile', [AuthController::class, 'profile'])->name('profile.show');
+    Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+
+    Route::middleware('admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
 });
 
-Route::apiResource('/users', UserController::class);
 Route::apiResource('/guru', GuruController::class);
 Route::apiResource('/mapel', MapelController::class);
 Route::apiResource('/kelas', KelasController::class);

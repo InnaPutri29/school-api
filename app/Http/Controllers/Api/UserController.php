@@ -4,122 +4,57 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    private function success($data, $statusCode, $message = 'success')
-    {
-        return response()->json([
-            'status' => true,
-            'message' => $message,
-            'data' => $data,
-            'status_code' => $statusCode
-        ], $statusCode);
-    }
-
-    private function failedResponse($message, $statusCode)
-    {
-        return response()->json([
-            'status' => false,
-            'message' => $message,
-            'data' => null,
-            'status_code' => $statusCode
-        ], $statusCode);
-    }
-
     public function index()
     {
-        $users = User::all();
-
-        return $this->success($users, 200);
+        $users = User::paginate(10);
+        return UserResource::collection($users);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        // Validasi data yang masuk
-        $validator = Validator::make($request->all(), [
-            'type' => 'required|in:admin,guru',
-            'username' => 'required|string|unique:users,username',
-            'password' => 'required|min:6'
+        $user = User::create([
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'type'     => $request->type,
         ]);
 
-        // Jika validasi gagal
-        if ($validator->fails()) {
-            $msg = $validator->errors();
-            return $this->failedResponse($msg, 422);
-        }
-
-        // Proses simpan data ke database 
-        $user = new User();
-        $user->type = $request->type;
-        $user->username = $request->username;
-        $user->password = Hash::make($request->password);
-
-        $saveUser = $user->save();
-
-        if ($saveUser) {
-            return $this->success($user, 201);
-        } else {
-            return $this->failedResponse('User gagal ditambahkan!', 500);
-        }
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(User $user)
     {
-        return $this->success($user, 200);
+        return new UserResource($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        // Validasi data yang akan diupdate
-        $validator = Validator::make($request->all(), [
-            'type' => 'required|in:admin,guru',
-            'username' => 'required|string|unique:users,username,' . $user->id,
-            'password' => 'nullable|min:6' // Password boleh kosong jika tidak ingin diubah
-        ]);
+        $data = $request->only(['username', 'type']);
 
-        if ($validator->fails()) {
-            return $this->failedResponse($validator->errors(), 422);
-        }
-
-        $user->type = $request->type;
-        $user->username = $request->username;
-
-        // Hanya update password jika diisi
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            $data['password'] = Hash::make($request->password);
         }
 
-        if ($user->save()) {
-            return $this->success($user, 200, 'User berhasil diperbarui');
-        }
-
-        return $this->failedResponse('User gagal diperbarui!', 500);
+        $user->update($data);
+        return (new UserResource($user))->additional([
+            'meta' => [
+                'message' => 'Profil berhasil diperbarui!',
+                'status' => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
-        $deleteData = $user->delete();
-
-        if ($deleteData) {
-            return $this->success(null, 200, 'User berhasil dihapus');
-        } else {
-            return $this->failedResponse('User gagal dihapus!', 500);
-        }
+        $user->delete();
+        return response()->json(['message' => 'User berhasil dihapus'], 200);
     }
 }
