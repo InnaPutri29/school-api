@@ -18,7 +18,12 @@ class AdminSeeder extends Seeder
             'type' => 'admin',
             'username' => 'admin',
             'password' => Hash::make('qwe123')
-        ]); 
+        ]);
 
+        User::create([
+            'type' => 'guru',
+            'username' => 'budi',
+            'password' => Hash::make('qwe123')
+        ]);
     }
 }

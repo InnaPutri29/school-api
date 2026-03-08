@@ -29,9 +29,7 @@ class UserController extends Controller
             'status_code' => $statusCode
         ], $statusCode);
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $users = User::all();

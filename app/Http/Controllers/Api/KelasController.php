@@ -13,7 +13,14 @@ class KelasController extends Controller
      */
     public function index()
     {
-        //
+        $kelas = Kelas::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $kelas,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -21,7 +28,14 @@ class KelasController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $kelas = Kelas::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $kelas,
+            'status_code' => 201
+        ], 201);
     }
 
     /**
@@ -29,7 +43,12 @@ class KelasController extends Controller
      */
     public function show(Kelas $kelas)
     {
-        //
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $kelas,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -37,7 +56,14 @@ class KelasController extends Controller
      */
     public function update(Request $request, Kelas $kelas)
     {
-        //
+        $kelas->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $kelas,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -45,6 +71,13 @@ class KelasController extends Controller
      */
     public function destroy(Kelas $kelas)
     {
-        //
+        $kelas->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => null,
+            'status_code' => 200
+        ], 200);
     }
 }

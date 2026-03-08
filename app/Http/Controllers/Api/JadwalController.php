@@ -13,7 +13,14 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        //
+        $jadwal = Jadwal::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $jadwal,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -21,7 +28,14 @@ class JadwalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $jadwal = Jadwal::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $jadwal,
+            'status_code' => 201
+        ], 201);
     }
 
     /**
@@ -29,7 +43,12 @@ class JadwalController extends Controller
      */
     public function show(Jadwal $jadwal)
     {
-        //
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $jadwal,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -37,7 +56,14 @@ class JadwalController extends Controller
      */
     public function update(Request $request, Jadwal $jadwal)
     {
-        //
+        $jadwal->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $jadwal,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -45,6 +71,13 @@ class JadwalController extends Controller
      */
     public function destroy(Jadwal $jadwal)
     {
-        //
+        $jadwal->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => null,
+            'status_code' => 200
+        ], 200);
     }
 }

@@ -13,7 +13,14 @@ class GuruController extends Controller
      */
     public function index()
     {
-        //
+        $guru = Guru::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $guru,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -21,7 +28,14 @@ class GuruController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $guru = Guru::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $guru,
+            'status_code' => 201
+        ], 201);
     }
 
     /**
@@ -29,7 +43,12 @@ class GuruController extends Controller
      */
     public function show(Guru $guru)
     {
-        //
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $guru,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -37,7 +56,14 @@ class GuruController extends Controller
      */
     public function update(Request $request, Guru $guru)
     {
-        //
+        $guru->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $guru,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -45,6 +71,13 @@ class GuruController extends Controller
      */
     public function destroy(Guru $guru)
     {
-        //
+        $guru->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => null,
+            'status_code' => 200
+        ], 200);
     }
 }

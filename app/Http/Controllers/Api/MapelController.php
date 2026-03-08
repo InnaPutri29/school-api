@@ -13,7 +13,14 @@ class MapelController extends Controller
      */
     public function index()
     {
-        //
+        $mapel = Mapel::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $mapel,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -21,7 +28,14 @@ class MapelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $mapel = Mapel::create($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $mapel,
+            'status_code' => 201
+        ], 201);
     }
 
     /**
@@ -29,7 +43,12 @@ class MapelController extends Controller
      */
     public function show(Mapel $mapel)
     {
-        //
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $mapel,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -37,7 +56,14 @@ class MapelController extends Controller
      */
     public function update(Request $request, Mapel $mapel)
     {
-        //
+        $mapel->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $mapel,
+            'status_code' => 200
+        ], 200);
     }
 
     /**
@@ -45,6 +71,13 @@ class MapelController extends Controller
      */
     public function destroy(Mapel $mapel)
     {
-        //
+        $mapel->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => null,
+            'status_code' => 200
+        ], 200);
     }
 }
