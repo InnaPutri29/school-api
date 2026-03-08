@@ -3,81 +3,44 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Model\Mapel;
-use Illuminate\Http\Request;
+use App\Models\Mapel;
+use App\Http\Requests\Mapel\MapelStoreRequest;
+use App\Http\Requests\Mapel\MapelUpdateRequest;
+use App\Http\Resources\MapelResource;
 
 class MapelController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $mapel = Mapel::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $mapel,
-            'status_code' => 200
-        ], 200);
+        $mapel = Mapel::paginate(10);
+        return MapelResource::collection($mapel);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(MapelStoreRequest $request)
     {
-        $mapel = Mapel::create($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $mapel,
-            'status_code' => 201
-        ], 201);
+        $mapel = Mapel::create($request->validated());
+        return (new MapelResource($mapel))->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Mapel $mapel)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $mapel,
-            'status_code' => 200
-        ], 200);
+        return new MapelResource($mapel);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Mapel $mapel)
+    public function update(MapelUpdateRequest $request, Mapel $mapel)
     {
-        $mapel->update($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $mapel,
-            'status_code' => 200
-        ], 200);
+        $mapel->update($request->validated());
+        return (new MapelResource($mapel))->additional([
+            'meta' => [
+                'message' => 'Mata pelajaran berhasil diperbarui!',
+                'status' => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Mapel $mapel)
     {
         $mapel->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => null,
-            'status_code' => 200
-        ], 200);
+        return response()->json(['message' => 'Mata pelajaran berhasil dihapus'], 200);
     }
 }
