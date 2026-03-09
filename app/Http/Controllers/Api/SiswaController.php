@@ -3,81 +3,49 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Model\Siswa;
-use Illuminate\Http\Request;
+use App\Models\Siswa;
+use App\Http\Requests\Siswa\SiswaStoreRequest;
+use App\Http\Requests\Siswa\SiswaUpdateRequest;
+use App\Http\Resources\SiswaResource;
 
 class SiswaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $siswa = Siswa::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $siswa,
-            'status_code' => 200
-        ], 200);
+        // Eager load tabel kelas agar performa kencang
+        $siswa = Siswa::with('kelas')->paginate(10);
+        return SiswaResource::collection($siswa);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(SiswaStoreRequest $request)
     {
-        $siswa = Siswa::create($request->all());
+        $siswa = Siswa::create($request->validated());
 
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $siswa,
-            'status_code' => 201
-        ], 201);
+        return (new SiswaResource($siswa->load('kelas')))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Siswa $siswa)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $siswa,
-            'status_code' => 200
-        ], 200);
+        return new SiswaResource($siswa->load('kelas'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Siswa $siswa)
+    public function update(SiswaUpdateRequest $request, Siswa $siswa)
     {
-        $siswa->update($request->all());
+        $siswa->update($request->validated());
 
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $siswa,
-            'status_code' => 200
-        ], 200);
+        return (new SiswaResource($siswa->load('kelas')))->additional([
+            'meta' => [
+                'message' => 'Data siswa berhasil diperbarui!',
+                'status'  => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Siswa $siswa)
     {
         $siswa->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => null,
-            'status_code' => 200
-        ], 200);
+        return response()->json(['message' => 'Data siswa berhasil dihapus'], 200);
     }
 }

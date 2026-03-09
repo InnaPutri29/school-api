@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +24,6 @@ class Siswa extends Model
 
     public function kelas()
     {
-        return $this->belongsTo('App\Models\Model\Kelas', 'kelas_id');
+        return $this->belongsTo('App\Models\Kelas', 'kelas_id');
     }
 }

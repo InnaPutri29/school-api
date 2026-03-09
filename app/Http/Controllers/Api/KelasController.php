@@ -19,7 +19,7 @@ class KelasController extends Controller
     public function store(KelasStoreRequest $request)
     {
         $kelas = Kelas::create($request->validated());
-        return (new KelasResource($kelas))->response()->setStatusCode(201); // Status 201 Created
+        return (new KelasResource($kelas))->response()->setStatusCode(201);
     }
 
     public function show(Kelas $kela)

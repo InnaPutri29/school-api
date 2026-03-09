@@ -11,11 +11,11 @@ class Kelas extends Model
 
     public function siswas()
     {
-        return $this->hasMany('App\Model\Siswa', 'kelas_id');
+        return $this->hasMany('App\Models\Siswa', 'kelas_id');
     }
 
     public function jadwals()
     {
-        return $this->hasMany('App\Model\Jadwal', 'kelas_id');
+        return $this->hasMany('App\Models\Jadwal', 'kelas_id');
     }
 }

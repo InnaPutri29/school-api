@@ -12,7 +12,6 @@ class JadwalController extends Controller
 {
     public function index()
     {
-        // Eager loading 3 tabel sekaligus untuk menghindari N+1 Query problem
         $jadwal = Jadwal::with(['guru', 'mapel', 'kelas'])->paginate(10);
         return JadwalResource::collection($jadwal);
     }
@@ -21,7 +20,6 @@ class JadwalController extends Controller
     {
         $jadwal = Jadwal::create($request->validated());
         
-        // Load relasi sebelum dikembalikan sebagai resource
         return (new JadwalResource($jadwal->load(['guru', 'mapel', 'kelas'])))
                 ->response()
                 ->setStatusCode(201);
