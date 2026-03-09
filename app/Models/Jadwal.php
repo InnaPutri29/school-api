@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,16 +17,16 @@ class Jadwal extends Model
 
     public function kelas()
     {
-        return $this->belongsTo('App\Model\Kelas', 'kelas_id');
+        return $this->belongsTo('App\Models\Kelas', 'kelas_id');
     }
 
     public function mapel()
     {
-        return $this->belongsTo('App\Model\Mapel', 'mapel_id');
+        return $this->belongsTo('App\Models\Mapel', 'mapel_id');
     }
 
     public function guru()
     {
-        return $this->belongsTo('App\Model\Guru', 'guru_id');
+        return $this->belongsTo('App\Models\Guru', 'guru_id');
     }
 }

@@ -3,81 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Model\Jadwal;
-use Illuminate\Http\Request;
+use App\Models\Jadwal;
+use App\Http\Requests\Jadwal\JadwalStoreRequest;
+use App\Http\Requests\Jadwal\JadwalUpdateRequest;
+use App\Http\Resources\JadwalResource;
 
 class JadwalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $jadwal = Jadwal::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $jadwal,
-            'status_code' => 200
-        ], 200);
+        // Eager loading 3 tabel sekaligus untuk menghindari N+1 Query problem
+        $jadwal = Jadwal::with(['guru', 'mapel', 'kelas'])->paginate(10);
+        return JadwalResource::collection($jadwal);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(JadwalStoreRequest $request)
     {
-        $jadwal = Jadwal::create($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $jadwal,
-            'status_code' => 201
-        ], 201);
+        $jadwal = Jadwal::create($request->validated());
+        
+        // Load relasi sebelum dikembalikan sebagai resource
+        return (new JadwalResource($jadwal->load(['guru', 'mapel', 'kelas'])))
+                ->response()
+                ->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Jadwal $jadwal)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $jadwal,
-            'status_code' => 200
-        ], 200);
+        return new JadwalResource($jadwal->load(['guru', 'mapel', 'kelas']));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Jadwal $jadwal)
+    public function update(JadwalUpdateRequest $request, Jadwal $jadwal)
     {
-        $jadwal->update($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $jadwal,
-            'status_code' => 200
-        ], 200);
+        $jadwal->update($request->validated());
+        
+        return (new JadwalResource($jadwal->load(['guru', 'mapel', 'kelas'])))->additional([
+            'meta' => [
+                'message' => 'Jadwal berhasil diperbarui!',
+                'status'  => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Jadwal $jadwal)
     {
         $jadwal->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => null,
-            'status_code' => 200
-        ], 200);
+        return response()->json(['message' => 'Jadwal berhasil dihapus'], 200);
     }
 }
