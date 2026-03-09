@@ -3,81 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Model\Guru;
-use Illuminate\Http\Request;
+use App\Models\Guru;
+use App\Http\Requests\Guru\GuruStoreRequest;
+use App\Http\Requests\Guru\GuruUpdateRequest;
+use App\Http\Resources\GuruResource;
 
 class GuruController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $guru = Guru::all();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $guru,
-            'status_code' => 200
-        ], 200);
+        // Eager loading 'user' agar tidak terjadi N+1 query
+        $guru = Guru::with('user')->paginate(10);
+        return GuruResource::collection($guru);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(GuruStoreRequest $request)
     {
-        $guru = Guru::create($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $guru,
-            'status_code' => 201
-        ], 201);
+        $guru = Guru::create($request->validated());
+        return (new GuruResource($guru->load('user')))->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Guru $guru)
     {
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $guru,
-            'status_code' => 200
-        ], 200);
+        return new GuruResource($guru->load('user'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Guru $guru)
+    public function update(GuruUpdateRequest $request, Guru $guru) 
     {
-        $guru->update($request->all());
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => $guru,
-            'status_code' => 200
-        ], 200);
+        $guru->update($request->validated());
+        return (new GuruResource($guru->load('user')))->additional([
+            'meta' => [
+                'message' => 'Data guru berhasil diperbarui!',
+                'status' => 'success'
+            ]
+        ])->response()->setStatusCode(200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Guru $guru)
     {
         $guru->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'success',
-            'data' => null,
-            'status_code' => 200
-        ], 200);
+        return response()->json(['message' => 'Data guru berhasil dihapus'], 200);
     }
 }

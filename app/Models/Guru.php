@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,11 +24,11 @@ class Guru extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
     public function jadwals()
     {
-        return $this->hasMany('App\Model\Jadwal', 'guru_id');
+        return $this->hasMany('App\Models\Jadwal', 'guru_id');
     }
 }

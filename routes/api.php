@@ -21,9 +21,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class);
         Route::apiResource('/kelas', KelasController::class);
         Route::apiResource('/mapel', MapelController::class);
+        Route::apiResource('/guru', GuruController::class);
     });
 });
 
-Route::apiResource('/guru', GuruController::class);
 Route::apiResource('/siswa', SiswaController::class);
 Route::apiResource('/jadwal', JadwalController::class);
