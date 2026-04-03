@@ -10,18 +10,20 @@ class GuruCollection extends ResourceCollection
     /**
      * Transform the resource collection into an array.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         return [
-            // 1. href: Tautan permanen ke koleksi Guru
+            // 1. Tautan ke halaman ini sendiri
             'href' => route('guru.index'),
 
-            // 2. items: Array data yang otomatis di-format oleh GuruResource (termasuk relasi user)
-            'items' => $this->collection,
+            // 2. Data utama: Menggunakan GuruResource untuk setiap item di koleksi
+            // Ini akan menghasilkan array 'items' yang berisi data guru + links masing-masing
+            'items' => GuruResource::collection($this->collection),
 
-            // 3. links: Tautan relasi level koleksi
+            // 3. Tautan navigasi level koleksi
             'links' => [
                 [
                     'rel'  => 'self',
@@ -29,7 +31,7 @@ class GuruCollection extends ResourceCollection
                 ]
             ],
 
-            // 4. queries: Template pencarian data guru
+            // 4. Queries: Dokumentasi cara mencari data guru
             'queries' => [
                 [
                     'rel'    => 'search',
@@ -42,7 +44,7 @@ class GuruCollection extends ResourceCollection
                 ]
             ],
 
-            // 5. template: Form kosong untuk memandu pembuatan data guru baru
+            // 5. Template: Blueprint untuk membuat data guru baru (POST)
             'template' => [
                 'data' => [
                     ['name' => 'user_id', 'value' => '', 'prompt' => 'ID User akun sistem (Wajib)'],

@@ -35,4 +35,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::apiResource('guru', GuruController::class)->except(['index', 'show']);
     Route::apiResource('jadwal', JadwalController::class)->except(['index', 'show']);
     Route::apiResource('siswa', SiswaController::class)->except(['index', 'show']);
+
+    Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 });

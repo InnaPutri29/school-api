@@ -16,6 +16,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     /**
+     * Berfungsi untuk mengembalikan response sukses
      */
     private function success($data, $statusCode, $message = 'success')
     {
@@ -28,6 +29,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Berfungsi untuk mengembalikan response gagal
      */
     private function failedResponse($message, $statusCode)
     {
@@ -40,6 +42,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Fungsi Login JWT
      */
     public function login(LoginRequest $request)
     {
@@ -62,6 +65,49 @@ class AuthController extends Controller
     }
 
     /**
+     * Fungsi Register JWT
+     */
+    public function register(Request $request)
+    {
+        // 1. Validasi Input
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|max:255|unique:users',
+            'email'    => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal!',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // 2. Buat User Baru
+        $user = User::create([
+            'username' => $request->username,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'siswa' // Default role (Hapus/sesuaikan jika database kamu tidak butuh 'role')
+        ]);
+
+        // 3. Generate Token JWT secara otomatis setelah mendaftar
+        $token = Auth::guard('api')->login($user);
+
+        // 4. Kembalikan Response
+        return (new UserResource($user))->additional([
+            'meta' => [
+                'token' => $token,
+                'token_type' => 'Bearer',
+            ],
+            'status' => true,
+            'message' => 'Registrasi berhasil.'
+        ]);
+    }
+
+    /**
+     * Ambil Data Profil
      */
     public function profile()
     {
@@ -70,6 +116,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Update Profil User
      */
     public function updateProfile(UserUpdateRequest $request)
     {
@@ -92,6 +139,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Fungsi Logout
      */
     public function logout()
     {

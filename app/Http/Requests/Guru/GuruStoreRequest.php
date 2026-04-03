@@ -22,7 +22,7 @@ class GuruStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'      => 'required|exists:users,id|unique:guru,user_id',
+            'user_id'      => 'nullable|exists:users,id|unique:guru,user_id',
             'nip'          => 'nullable|string|unique:guru,nip',
             'nama'         => 'required|string|max:255',
             'gender'       => 'required|in:laki-laki,perempuan',
