@@ -15,16 +15,26 @@ class GuruResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->id,
-            'nip'          => $this->nip,
-            'nama'         => $this->nama,
-            'email'        => $this->email,
-            'gender'       => $this->gender,
-            'info_akun'    => [
-                'user_id'  => $this->user_id,
-                'username' => $this->user->username,
+            'id'             => $this->id,
+            'nip'            => $this->nip,
+            'nama'           => $this->nama,
+            'email'          => $this->email,
+            'gender'         => $this->gender,
+            'phone_number'   => $this->phone_number,
+            'tempat_lahir'   => $this->tempat_lahir,
+            'tgl_lahir'      => $this->tgl_lahir,
+            'alamat'         => $this->alamat,
+            'pendidikan'     => $this->pendidikan,
+            
+            'info_akun'      => [
+                'user_id'    => $this->user_id,
+                // Gunakan optional() agar tidak error jika usernya null
+                'username'   => optional($this->user)->username ?? 'Tidak ada user',
+                'role'       => optional($this->user)->role ?? '-',
             ],
-            '_links'       => [
+            
+            // HATEOAS Links untuk kemudahan akses API
+            '_links'         => [
                 [
                     'rel'    => 'self',
                     'method' => 'GET',

@@ -9,6 +9,7 @@ use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -57,5 +58,24 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->json(['message' => 'User berhasil dihapus'], 200);
+    }
+
+    public function cek_token()
+    {
+        try {
+            /** @var User $user */
+            $user = JWTAuth::parseToken()->authenticate();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Token valid',
+                'data'    => new UserResource($user) 
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token tidak valid atau sudah kedaluwarsa'
+            ], 401);
+        }
     }
 }
